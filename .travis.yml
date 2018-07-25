@@ -1,0 +1,29 @@
+language: go
+
+go:
+  - "1.10.x"
+
+before_install:
+  - go get github.com/mitchellh/gox
+
+install: true
+
+script:
+  - diff -u <(echo -n) <(gofmt -d .)
+  - go vet ./...
+  - go test -v -race ./...
+  - gox -os="linux darwin windows" -arch="amd64" -output="sampletee.." -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose .
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: PceJtbuOsYQ5rl4QgyCr25T0N8Qlh1GUsFlkG+w+yub4MumYtCD/ab7X4m3aC9/qO26zr13zDHYU2REUhI3mAjdln6yJjdCaapj5LjGjepg5l39Y/7mpIig7hH3j2ByQmbJVY1wTunnrMMYp34MjG0GYs00r7zKAp6H0cxBtArlwwiWV6uYy2cq/8RGtynzqslsq8pmlvsfcqzm4ZJfXqRyjETqXaPZKeGpUc67VVJLg+aa0QQbYIx+17s9XY6VyQdimfMCEufZiD88o6DGpdCRX78ZoF/gBLv4OP++s9RPyaiAQuVBS9lRRstw0ikx+Xwh9eGZu6L33XvpVtIGmr7IWYz9/oAD8Ih+aZgYJ+ynQ+Q0AQXZ7loCRr8bb2/g5oEgfO7E8HToMF7BnSGuuRYIcqzMbLid97wvJH62/qE/n0rsiuwAsqiSG/1dSDIO5ztRMAs8TAJG96EsMQu0Wx1AsOm909XvN35scqEezi18LCUatAKhUxKnh5AUbXXCnX2gMwjDO2MEOgHiJ9YevVPzs9TL9vqPyoQrSLXqyH5oW/tu3ol/czLhdtp43+ofuvvrQpR84LuqeU2PiXwAo8r63C23uhiLb9dU3TgVlrPagM6XVZalU9CyLbLqAb7an96hpOfxqTdVfn7Iz7moxdBxOnzRfnSei1DsthXM9wiw=
+  file:
+    - sampletee.linux.amd64
+    - sampletee.darwin.amd64
+    - sampletee.windows.amd64
+  on:
+    repo: adamwg/sampletee
+    branch: master
+    tags: true
